@@ -41,7 +41,7 @@ Para i=0 to X hacer
 					d= avenidas[coordenada[0]]+1
 
 			si dos=true Crear clausula (a,b) (b,d) (a,c) (c,d)
-			si dos=false crear clausula (a) y es la unica clausula 
+			si dos=false crear clausula (a)
 
 		Si coordenada[0] > coordenada[2]
 
@@ -50,20 +50,13 @@ Para i=0 to X hacer
 			Si coordenada[1] != coordenada[3]
 				b= calles[coordenada[3]]+1
 				dos= true
-				Si coordenada[1] < coordenada[3]
-					c= avenidas[coordenada[0]]
-					d= avenidas[coordenada[2]]
-				si coordenada[1] > coordenada[3]
-					c= avenidas[coordenada[0]]+1
-					d= avenidas[coordenada[0]]+1
-
-			si dos=true Crear clausula (a,b) (b,d) (a,c) (c,d)
+			si dos=true Crear clausula (a,b)
 			si dos=false crear clausula (a)
 			
 		sino si coordenada[0]=coordenada[2]    // Estan en la misma avenida
 			si coordenada[1] < coordenada[3]
 				c= avenidas[coordenada[1]]
-				Crear clausula (c)    y es la unica clausula 
+				Crear clausula (c) y es la unica clausula 
 			sino coordenada[1] > coordenada[3]
 				c= avenidas[coordenada[1]] + 1
 				Crear clausula (c)
@@ -73,6 +66,28 @@ Para i=0 to X hacer
 
 
 
+		// Ver orientacion de la avenida
+		Si coordenada[1] < coordenada[3] ^ coordenada[0] != coordenada[2]
+
+			c= avenidas[coordenada[0]]
+			d= avenidas[coordenada[2]]
+			Crear clausula (c,d)
+			dos= true
+
+		sino si coordenada[1] > coordenada[3] ^ coordenada[0] != coordenada[2]
+
+			c= avenidas[coordenada[0]]+1
+			d= avenidas[coordenada[0]]+1
+			Crear clausula (c,d)
+			dos=true
+		sino si coordenada[1] = coordenada[3]  ^ coordenada[0] != coordenada[2]  //Estan en la misma calle
+			si coordenada[0] < coordenada[2]
+				c= avenidas[coordenada[1]]
+				Crear clausula (c) y es la unica clausula 
+			sino coordenada[1] > coordenada[3]
+				c= avenidas[coordenada[1]] + 1
+				Crear clausula (c)
+			
 
 
 
