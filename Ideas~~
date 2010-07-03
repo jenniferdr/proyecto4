@@ -24,7 +24,7 @@ Para i=0 to X hacer
 			Si calles[coordenada[z]] != -1
 				calles[coordenada[z]]= next_simbol
 				next_simbol=next_simbol+2
-		dos=false	
+		uno=false	
 		// Ver orientacion de las calles
 		Si coordenada[0] < coordenada[2] 
 
@@ -63,6 +63,30 @@ Para i=0 to X hacer
 			si son iguales 
 				Break ?? Es el mismo punto, es true como se cumple no hay nada q hacer
 				Como se usaba el continue??..  
+
+
+
+		// Ver orientacion de la avenida
+		Si coordenada[1] < coordenada[3] ^ coordenada[0] != coordenada[2]
+
+			c= avenidas[coordenada[0]]
+			d= avenidas[coordenada[2]]
+			Crear clausula (c,d)
+			dos= true
+
+		sino si coordenada[1] > coordenada[3] ^ coordenada[0] != coordenada[2]
+
+			c= avenidas[coordenada[0]]+1
+			d= avenidas[coordenada[0]]+1
+			Crear clausula (c,d)
+			dos=true
+		sino si coordenada[1] = coordenada[3]  ^ coordenada[0] != coordenada[2]  //Estan en la misma calle
+			si coordenada[0] < coordenada[2]
+				c= avenidas[coordenada[1]]
+				Crear clausula (c) y es la unica clausula 
+			sino coordenada[1] > coordenada[3]
+				c= avenidas[coordenada[1]] + 1
+				Crear clausula (c)
 			
 
 
