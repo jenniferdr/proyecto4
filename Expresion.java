@@ -74,11 +74,58 @@ public class Expresion {
     }
 
     private DiGraph generarGrafoImplicacion() {
+	/* Problema:
+	   Este método requiere que de alguna manera extraigamos todos los arcos de 
+	   un grafo sin destruirlo. DiGraph provee el método removeAllArcs, pero
+	   esto destruye el grafo. Un workaround sería clonar el grafo y a ese clon
+	   hacerle removeAllArcs, pero esto implica en un instante tener dos veces
+	   el grafo en memoria, lo cual no es necesariamente posible.
+	   La solución ideal es hacer un método eficiente que devuelva los arcos
+	   de un grafo. A este método lo llamaremos getAllArcs()
+	 */
 
+	/* Qué hacer..
+	  
+	   Crear un grafo con numero de nodos = numSimbolos
+	   Lista de arcos = getAllArcs del grafo expresion
+	   Para cada arco x de la lista de arcos
+	       Obtener nodos (x,y) que representan los símbolos
+	       Agregar al grafo los arcos (neg(x),y)
+	   Devolver el grafo resultante.
+
+	   Donde neg(x) es
+	     Si  x es Par -> return x+1
+	     Si  x es Impar -> return  x-1
+
+	*/
+    }
+
+    private int negado(int x) {
+	if (this.esPar(x)) {
+	    return x+1;
+	} else {
+	    return x-1;
+	}
     }
 
     private boolean chequearComponentes(List<List<Integer>> componentes) {
+	/* Qué hacer...
+	   Este método recibe una lista de listas, cada lista es una componente
+	   f. conexa del grafo de implicación.
 
+	   Si solo hay 1 componente -> es insatisfacible, listo
+
+	   Para cada componente
+	       Convertir la lista a arreglo
+	       Ordenar el arreglo
+	       Para cada entero x del arreglo
+	           Si x es par, si el próximo elemento es x+1, entonces no es satisfacible
+		   (un elemento y su negado estarían en la misma comp.)
+		   Si x es impar, seguir adelante (porque si estuviera el negado de x, sería el número
+		   anterior, el cual ya habrías chequeado)
+
+	   Nota: implementar quicksort para ordenar arreglos de Integer
+	 */
     }
 
     /**
@@ -97,10 +144,12 @@ public class Expresion {
 	    this.simplificar();
 	}
 
-	
-	
+        DiGraph grafoImp = this.generarGrafoImplicacion()
+	List<List<Integer>> componentes = grafoImp.Tarjan();
+	this.satisfacible = this.chequearComponentes(componentes);	
 	this.satisVerificada = true;
-	return this.satisfacibilidad;
+
+	return this.satisfacible;
     }
 
 }
