@@ -246,13 +246,7 @@ public class Lista <E> implements List <E>,Cloneable {
 	}
 	return arreglo;
     }
-    public int[] toArray(){
-	int[] array= new E[this.size()];
-	for(int i=0; i< this.size() ; i++){
-	    array[i]= this.get(i).intValue();
-	}
-	return array
-    }
+
 
     /**
      * Retorna la retpresentacion en String de esta {@code List}

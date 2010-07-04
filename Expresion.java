@@ -175,7 +175,7 @@ public class Expresion {
 	}
 	for(int i=0; i< componentes.size() ; i++){
 	    List<Integer> componente= componentes.get(i);
-	    int[] compConexa= componentes.toArray();  //Agregar esa funcion a la clase list
+	    Object[] compConexa= componentes.toArray();
 	    compConexa= ordenar(compConexa);	      // Hacer Quicksort
 	    for(int j=0; j< compConexa.length() ; j++){
 		int nodo= compConexa[j].intValue();		
