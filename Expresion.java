@@ -34,22 +34,22 @@ public class Expresion {
 	this.esUnitario= new boolean[numSimbolos]; 
 
 	for(int i=0; i< clausulas.size() ; i++){
-		int variable1= clausulas.get(i).getSimbolo1();
-		int variable2= clausulas.get(i).getSimbolo2();
-		if( variable1 >= numSimbolos || variable2 >= numSimbolos )
-			// Pienso q seria bueno lanzar una excepcion aki
-			this.expresion= null;
+	    int variable1= clausulas.get(i).getSimbolo1();
+	    int variable2= clausulas.get(i).getSimbolo2();
+	    if( variable1 >= numSimbolos || variable2 >= numSimbolos )
+	    	// Pienso q seria bueno lanzar una excepcion aki
+		this.expresion= null;
 
-		if(variable2!=-1){
-			// Relacionar las variables en el grafo
-			Arc arco= this.expresion.addArc(variable1, variable2);
-			arco= this.expresion.addArc(variable2, variable1);
-		}else{
-			// La clausula es unitaria 
-			boolean ok= this.unitarios.add(new Integer(variable1));
-			this.esUnitario[variable1]= true;
-			this.simple= false;
-		}
+	    if(variable2!=-1){
+		// Relacionar las variables en el grafo
+		Arc arco= this.expresion.addArc(variable1, variable2);
+		arco= this.expresion.addArc(variable2, variable1);
+	    }else{
+		// La clausula es unitaria 
+		boolean ok= this.unitarios.add(new Integer(variable1));
+		this.esUnitario[variable1]= true;
+		this.simple= false;
+	    }
 	}
 	/* Construir un grafo con numero de nodos = numSimbolos
 	   Hay que iterar sobre la lista de cláusulas y para cada una:
@@ -72,44 +72,40 @@ public class Expresion {
 	}
 	
 	for(int i=0; i< this.unitarios.size(); i++){
-		int nodo= (this.unitarios.get(i)).intValue();
-		List<Integer> adyacentes= this.expresion.getPredecesors(nodo);
-		// Eliminar todos los arcos del nodo unitario
-		for(int j=0; j< adyacentes.size() ;j++){
-			int nodoAdy = adyacentes.get(j).intValue();
-			Arc arco= this.expresion.delArc(nodo,nodoAdy);
-			arco= this.expresion.delArc(nodoAdy,nodo);
-		}
+	    int nodo= (this.unitarios.get(i)).intValue();
+	    List<Integer> adyacentes= this.expresion.getPredecesors(nodo);
+	    // Eliminar todos los arcos del nodo unitario
+	    for(int j=0; j< adyacentes.size() ;j++){
+		int nodoAdy = adyacentes.get(j).intValue();
+		Arc arco= this.expresion.delArc(nodo,nodoAdy);
+		arco= this.expresion.delArc(nodoAdy,nodo);
+            }
 
-		int nodo_negado;
-		// Tomar el negado del simbolo
-		if(this.esPar(nodo)){
-			nodo_negado= nodo+1; 
-		}else{
-			nodo_negado= nodo-1;  
-		}
-		// Agregar adyacentes de nodo_negado a la lista de unitarios
-		// y eliminar todos sus arcos.
-		adyacentes= this.expresion.getPredecesors(nodo_negado);
+	    // Tomar el negado del simbolo
+	    int nodo_negado= this.negado(nodo);
+	    
+	    // Agregar adyacentes de nodo_negado a la lista de unitarios
+	    // y eliminar todos sus arcos.
+	    adyacentes= this.expresion.getPredecesors(nodo_negado);
 
-		for(int j=0; j< adyacentes.size() ;j++){
-			int nodoAdy = adyacentes.get(j).intValue();
-			boolean ok= this.unitarios.add(nodoAdy);
-			this.esUnitario[nodoAdy]= true;
+            for(int j=0; j< adyacentes.size() ;j++){
+		int nodoAdy = adyacentes.get(j).intValue();
+		boolean ok= this.unitarios.add(nodoAdy);
+		this.esUnitario[nodoAdy]= true;
 
-			// Verificar si existe contradiccion
-			if(this.esPar(nodoAdy) && this.esUnitario[nodoAdy+1]){
-				this.satisfVerificada = false;
-				return;	  
-			}
-			if(!(this.esPar(nodoAdy)) && this.esUnitario[nodoAdy-1]){
-				satisfVerificada = false;
-				return;	
-			}
-  			// Eliminar arcos
-			Arc arco= this.expresion.delArc(nodo_negado,nodoAdy);
-			arco= this.expresion.delArc(nodoAdy,nodo_negado);
+		// Verificar si existe contradiccion
+		if(this.esPar(nodoAdy) && this.esUnitario[nodoAdy+1]){
+		    this.satisfVerificada = false;
+		    return;	  
 		}
+		if(!(this.esPar(nodoAdy)) && this.esUnitario[nodoAdy-1]){
+		    satisfVerificada = false;
+		    return;	
+		}
+  		// Eliminar arcos
+		Arc arco= this.expresion.delArc(nodo_negado,nodoAdy);
+		arco= this.expresion.delArc(nodoAdy,nodo_negado);
+	    }
 	}
 	/* Qué hacer aqui...
 
@@ -170,11 +166,31 @@ public class Expresion {
     }
 
     private boolean chequearComponentes(List<List<Integer>> componentes) {
+	
+	if(componentes.size()==1){
+	    return false;
+	}
+	if(componentes.size()== this.numSimbolos){
+	    return true;
+	}
+	for(int i=0; i< componentes.size() ; i++){
+	    List<Integer> componente= componentes.get(i);
+	    int[] compConexa= componentes.toArray();  //Agregar esa funcion a la clase list
+	    compConexa= ordenar(compConexa);	      // Hacer Quicksort
+	    for(int j=0; j< compConexa.length() ; j++){
+		int nodo= compConexa[j].intValue();		
+		if(this.esPar(nodo) && (compConexa[j+1]== nodo+1) ){
+		    return false;		
+		}
+	    }
+	return true;
+	}	
 	/* Qué hacer...
 	   Este método recibe una lista de listas, cada lista es una componente
 	   f. conexa del grafo de implicación.
 
 	   Si solo hay 1 componente -> es insatisfacible, listo
+	    Y si la lista es del tamaño del grafo es satisfacible, listo
 
 	   Para cada componente
 	       Convertir la lista a arreglo
