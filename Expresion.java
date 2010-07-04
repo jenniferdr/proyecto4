@@ -1,3 +1,4 @@
+import java.lang.Integer;
 /**
  * Esta clase representa a una expresión en 2CNF. Si la expresión está en <2CNF esta clase
  * provee un método para simplificar dicha expresión a 2CNF. Además la clase provee un método
@@ -13,27 +14,47 @@ public class Expresion {
     DiGraph expresion;
     int numSimbolos;
     List<Integer> unitarios;
-    boolean simple;
+    boolean simple=true;
     boolean satisfVerificada = false;
-    boolean satisfacible;
+    boolean satisfacible=false;
     boolean[] esUnitario; //tamaño numSimbolos
 
     /**
      * Crea una nueva expresión a partir de una lista de cláusulas.
-     * @param clausulas Lista de cláusulas d ela expresión
+     * @param clausulas Lista de cláusulas de la expresión
      * @param numSimbolos Cantidad de símbolos distintos en la lista de cláusulas.
      *                    Debe ser igual o mayor a la cantidad real de símbolos,
-     *                    Si se provee un número menor, se devuelve null.
+     *                    Si se provee un número menor, el atributo expresion sera 
+     *                    un grafo nulo.
      */
     public Expresion (List<Clausula> clausulas, int numSimbolos) {
 	this.numSimbolos = numSimbolos;
+	this.expresion =new DiGraphList(numSimbolos);
+	this.unitarios= new Lista<Integer>();
+	this.esUnitario= new boolean[numSimbolos]; 
 
-	/* Qué hacer aquí...
-	  
-	   Construir un grafo con numero de nodos = numSimbolos
+	for(int i=0; i< clausulas.size() ; i++){
+		int variable1= clausulas.get(i).getSimbolo1();
+		int variable2= clausulas.get(i).getSimbolo2();
+		if( variable1 >= numSimbolos || variable2 >= numSimbolos )
+			// Pienso q seria bueno lanzar una excepcion aki
+			this.expresion= null;
+
+		if(variable2!=-1){
+			// Relacionar las variables en el grafo
+			Arc arco= this.expresion.addArc(variable1, variable2);
+			arco= this.expresion.addArc(variable2, variable1);
+		}else{
+			// La clausula es unitaria 
+			boolean ok= this.unitarios.add(new Integer(variable1));
+			this.esUnitario[variable1]= true;
+			this.simple= false;
+		}
+	}
+	/* Construir un grafo con numero de nodos = numSimbolos
 	   Hay que iterar sobre la lista de cláusulas y para cada una:
 	     -Chequear la validez de los simbolos
-	     (Si uno delos simbolos de la cláusula es <numSimbolos, devolver null)
+	     (Si uno delos simbolos de la cláusula es >=numSimbolos, devolver null)
 	     -Agregar los arcos en ambas direcciones al grafo
 	     -Si es una cláusula unitaria, agregarla a la lista de unitarios, y poner en false
 	     el booleano 'simple'
@@ -49,11 +70,51 @@ public class Expresion {
 	if (this.simple) {
 	    return;
 	}
+	
+	for(int i=0; i< this.unitarios.size(); i++){
+		int nodo= (this.unitarios.get(i)).intValue();
+		List<Integer> adyacentes= this.expresion.getPredecesors(nodo);
+		// Eliminar todos los arcos del nodo unitario
+		for(int j=0; j< adyacentes.size() ;j++){
+			int nodoAdy = adyacentes.get(j).intValue();
+			Arc arco= this.expresion.delArc(nodo,nodoAdy);
+			arco= this.expresion.delArc(nodoAdy,nodo);
+		}
 
+		int nodo_negado;
+		// Tomar el negado del simbolo
+		if(this.esPar(nodo)){
+			nodo_negado= nodo+1; 
+		}else{
+			nodo_negado= nodo-1;  
+		}
+		// Agregar adyacentes de nodo_negado a la lista de unitarios
+		// y eliminar todos sus arcos.
+		adyacentes= this.expresion.getPredecesors(nodo_negado);
+
+		for(int j=0; j< adyacentes.size() ;j++){
+			int nodoAdy = adyacentes.get(j).intValue();
+			boolean ok= this.unitarios.add(nodoAdy);
+			this.esUnitario[nodoAdy]= true;
+
+			// Verificar si existe contradiccion
+			if(this.esPar(nodoAdy) && this.esUnitario[nodoAdy+1]){
+				this.satisfVerificada = false;
+				return;	  
+			}
+			if(!(this.esPar(nodoAdy)) && this.esUnitario[nodoAdy-1]){
+				satisfVerificada = false;
+				return;	
+			}
+  			// Eliminar arcos
+			Arc arco= this.expresion.delArc(nodo_negado,nodoAdy);
+			arco= this.expresion.delArc(nodoAdy,nodo_negado);
+		}
+	}
 	/* Qué hacer aqui...
 
 	   Para cada elemento x de la lista 'unitarios' hacer:
-	      Eliminar todos los arcos incidentes en x
+	      Eliminar todos los arcos adyacentes a x
 	      Si x es Par (es no negado)
 		 Para cada sucesor y de x+1 -> ver si hay contradiccion(y),agregar a unitarios
 		 Eliminar todos los arcos incidentes en x+1
@@ -70,7 +131,7 @@ public class Expresion {
     }
 
     private boolean esPar(int x) {
-	return x mod 2 == 0;
+	return ((x%2) == 0);
     }
 
     private DiGraph generarGrafoImplicacion() {
@@ -134,7 +195,7 @@ public class Expresion {
      * @return true si es satisfacible, false si no lo es.
      */
     public boolean determinarSatisf() {
-	if (this.satisVerificada) {
+	if (this.satisfVerificada) {
 	    return this.satisfacible;
 	}
 	
@@ -144,10 +205,10 @@ public class Expresion {
 	    this.simplificar();
 	}
 
-        DiGraph grafoImp = this.generarGrafoImplicacion()
+        DiGraph grafoImp = this.generarGrafoImplicacion();
 	List<List<Integer>> componentes = grafoImp.Tarjan();
 	this.satisfacible = this.chequearComponentes(componentes);	
-	this.satisVerificada = true;
+	this.satisfVerificada = true;
 
 	return this.satisfacible;
     }

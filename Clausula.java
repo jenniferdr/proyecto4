@@ -10,13 +10,14 @@ public class Clausula {
 
     /**
      * Devuelve una cláusula unitaria que contiene al símbolo especificado.
-     * @param simbolo Un natural que representa a una variable en este disyunción.
-     *                debe ser un número mayor o igual a 0.
+     * @param simbolo: Un numero natural que representa a una variable en esta disyunción.
+     *                Tiene que ser un número mayor o igual a 0.
      */
     public Clausula (int simbolo) {
-	if (simbolo<0) {
+	// Los constructores no pueden devolver null deberiamos lanzar una excepcion o dejar la precondicion
+	/*if (simbolo<0) {
 	    return null;
-	}
+	}*/
 	this.simbolo1 = simbolo;
 	this.simbolo2 = -1;
     }
@@ -27,11 +28,12 @@ public class Clausula {
      *                debe ser un número mayor o igual a 0.
      * @param simbolo2 Un natural que representa a una variable en este disyunción.
      *                debe ser un número mayor o igual a 0.
+     * Devuelve null si alguno de los simbolos es menor a cero.
      */
     public Clausula (int simbolo1, int simbolo2) {
-	if (simbolo1<0 || simbolo2<0) {
+	/*if (simbolo1<0 || simbolo2<0) {
 	    return null;
-	}
+	}*/
 	this.simbolo1 = simbolo1;
 	this.simbolo2 = simbolo2;
     }
@@ -47,8 +49,8 @@ public class Clausula {
      * Devuelve una copia de esta cláusula
      */
     public Clausula clone() {
-	if (this.esUnitaria) {
-	    return new Clausula(this.simbolo1):
+	if (this.esUnitaria()) {
+	    return new Clausula(this.simbolo1);
 	} else {
 	    return new Clausula(this.simbolo1,this.simbolo2);
 	}
