@@ -578,5 +578,28 @@ public class DiGraphList extends DiGraph {
 	}
     }
 
+    /**
+     * Aplica el algoritmo de Tarjan al grafo para obtener las componentes fuertemente conexas.
+     * @return Una lista de listas de enteros. Cada lista de enteros es el conjunto de nodos de una componente fuertemente conexa del grafo.
+     */    
+    public List<List<Integer>> tarjan() {
+	List<List<Integer>> lista = new Lista<Lista<Integer>>();
+	return lista;
+    }
+
+
+    /**
+     * Devuelve una lista con todos los arcos pertenecientes a este grafo.
+     * @return Una lista de arcos.
+     */
+    public List<Arc> getAllArcs() {
+	List<Arc> arcos = new Lista<Arc>();
+	for (int i=0; i<this.numNodes; i++) {
+	    for (int j=0; j<outArcs[i].size(); j++) {
+		boolean ok = arcos.add(outArcs[i].get(j));
+	    }
+	}
+	return arcos;
+    }
 
 }

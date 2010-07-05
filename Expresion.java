@@ -131,6 +131,15 @@ public class Expresion {
     }
 
     private DiGraph generarGrafoImplicacion() {
+	
+	DiGraph grafoImp = new DiGraphList(numSimbolos);
+	List<Arc> arcos = grafoImp.getAllArcs();
+	for (int i=0; i<arcos.size(); i++) {
+	    int simbolo1 = arcos.get(i).getSource();
+	    int simbolo2 = arcos.get(i).getDestination();
+	    Arc arco = grafoImp.addArc(negado(simbolo1),simbolo2);
+	}
+	return grafoImp;
 	/* Problema:
 	   Este método requiere que de alguna manera extraigamos todos los arcos de 
 	   un grafo sin destruirlo. DiGraph provee el método removeAllArcs, pero
@@ -222,7 +231,7 @@ public class Expresion {
 	}
 
         DiGraph grafoImp = this.generarGrafoImplicacion();
-	List<List<Integer>> componentes = grafoImp.Tarjan();
+	List<List<Integer>> componentes = grafoImp.tarjan();
 	this.satisfacible = this.chequearComponentes(componentes);	
 	this.satisfVerificada = true;
 
