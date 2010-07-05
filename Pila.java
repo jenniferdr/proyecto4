@@ -25,7 +25,7 @@ public class Pila<E>{
 	    }
 	}
 
-	public boolean vacia(){
+	public boolean esVacia(){
 	    return (this.tam==0);
 	}
 

@@ -583,11 +583,84 @@ public class DiGraphList extends DiGraph {
      * @return Una lista de listas de enteros. Cada lista de enteros es el conjunto de nodos de una componente fuertemente conexa del grafo.
      */    
     public List<List<Integer>> tarjan() {
-	List<List<Integer>> lista = new Lista<Lista<Integer>>();
-	return lista;
+	Tarjan objTarjan = new Tarjan(this);
+	return objTarjan.obtComponentes();
     }
 
+    private class Tarjan {
+	int index = 0;
+	int[] indice;
+	int[] lowlink;
+	Pila pila = new Pila();
+	boolean[] enPila;
+	DiGraphList grafo;
+	List<List<Integer>> componentes;
+	
+	public Tarjan (DiGraphList grafo) {
+	    indice = new int[grafo.numNodes];
+	    lowlink = new int[grafo.numNodes];
+	    enPila = new boolean[grafo.numNodes];
 
+	    for (int i=0; i<grafo.numNodes; i++) {
+		indice[i] = -1;
+		lowlink[i] = -1;
+		enPila[i] = false;
+	    }
+
+	    this.grafo = grafo;
+	}
+	
+	public List<List<Integer>> obtComponentes() {
+	    componentes = new Lista<List<Integer>>();
+ 	    for (int i=0; i<grafo.numNodes; i++) {
+		if (indice[i]==-1) {		    
+		    //Coloca una componente en la pila
+		    this.tarjanAux(i);
+		}
+	    }
+
+	    return this.componentes;
+	}
+	
+	public void tarjanAux(int nodo) {
+	    indice[nodo] = index;
+	    lowlink[nodo] = index;
+	    index++;
+	    pila.empilar(new Integer(nodo));
+	    enPila[nodo] = true;
+	    
+	    List<Integer> sucesores = grafo.getSucesors(nodo);
+	    for (int i=0; i<sucesores.size(); i++) {
+		int nodoTmp = sucesores.get(i).intValue();
+		if (indice[nodoTmp] == -1) {
+		    tarjanAux(nodoTmp);
+		    lowlink[nodo] = minimo(lowlink[nodo],lowlink[nodoTmp]);
+		} else if (enPila[nodoTmp]) {
+		    lowlink[nodo] = minimo(lowlink[nodo],indice[nodoTmp]);
+		}
+	    }
+	    if (lowlink[nodo] == indice[nodo]) {
+		//Componente terminada
+		List<Integer> nuevaComp = new Lista<Integer>();
+		boolean ok = this.componentes.add(nuevaComp);
+		Integer nodoComp;
+		do {
+		    nodoComp = (Integer) pila.desempilar();
+		    enPila[nodoComp.intValue()] = false;
+		    ok = nuevaComp.add(nodoComp);
+		} while (nodo != nodoComp.intValue());
+	    }
+	}
+	
+	private int minimo(int a, int b) {
+	    if (a<=b) {
+		return a;
+	    } else {
+		return b;
+	    }
+	}
+    }
+    
     /**
      * Devuelve una lista con todos los arcos pertenecientes a este grafo.
      * @return Una lista de arcos.
