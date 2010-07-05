@@ -63,4 +63,9 @@ public class Clausula {
     public int getSimbolo2() {
 	return simbolo2;
     }
+
+    public String toString() {
+	String salida = simbolo1 + " v " + simbolo2;
+	return salida;
+    }
 }
