@@ -16,12 +16,12 @@ Para i=0 to X hacer
 		
 		// Asignar simbolos
 		Para z=0 y z=2 hacer
-			Si avenidas[coordenada[z]] != -1
+			Si avenidas[coordenada[z]] == -1
 				avenidas[coordenada[z]]= next_simbol
 				next_simbol=next_simbol+2
 		
 		Para z=1 y z=3
-			Si calles[coordenada[z]] != -1
+			Si calles[coordenada[z]] == -1
 				calles[coordenada[z]]= next_simbol
 				next_simbol=next_simbol+2
 		dos=false	
@@ -50,7 +50,14 @@ Para i=0 to X hacer
 			Si coordenada[1] != coordenada[3]
 				b= calles[coordenada[3]]+1
 				dos= true
-			si dos=true Crear clausulas (a,b) (a,b) (b,d) (a,c) (c,d)
+				Si coordenada[1] < coordenada[3]
+					c= avenidas[coordenada[0]]
+					d= avenidas[coordenada[2]]
+				si coordenada[1] > coordenada[3]
+					c= avenidas[coordenada[0]]+1
+					d= avenidas[coordenada[0]]+1
+
+			si dos=true Crear clausulas (a,b) (b,d) (a,c) (c,d)
 			si dos=false crear clausula (a)
 			
 		sino si coordenada[0]=coordenada[2]    // Estan en la misma avenida
