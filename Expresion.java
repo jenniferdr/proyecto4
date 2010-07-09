@@ -30,10 +30,10 @@ public class Expresion {
      * @param numSimbolos Un número par no negativo que es igual a la cantidad de símbolos
      *                    distintos entre todas las cláusulas multiplicado por 2.
      */
-    public Expresion (List<Clausula> clausulas, int numSimbolos) {
+    public Expresion (List<Clausula> clausulas, int numSimbolos) throws ExcepcionSimboloInvalido {
 	this.numSimbolos = numSimbolos;
-	this.expresion =new DiGraphList(numSimbolos);
-	this.unitarios= new Lista<Integer>();
+	this.expresion = new DiGraphList(numSimbolos);
+	this.unitarios = new Lista<Integer>();
 	this.esUnitario= new boolean[numSimbolos]; 
 
 	for (int i=0; i< clausulas.size() ; i++){
@@ -97,13 +97,22 @@ public class Expresion {
 
 		// Verificar si existe contradiccion
 		if(this.esPar(nodoAdy) && this.esUnitario[nodoAdy+1]){
-		    this.satisfVerificada = false;
+		    System.out.println("hola");
+		    this.satisfacible = false;
+		    this.satisfVerificada = true;
 		    return;	  
 		}
 		if(!(this.esPar(nodoAdy)) && this.esUnitario[nodoAdy-1]){
-		    satisfVerificada = false;
+		    System.out.println("hello");
+		    this.satisfacible = false;
+		    this.satisfVerificada = true;
 		    return;	
 		}
+		/*if (this.esUnitario[negado(nodoAdy)]) {
+		    this.satisfacible = false;
+		    this.satisfVerificada = true;
+		    }*/
+
   		// Eliminar arcos
 		Arc arco= this.expresion.delArc(nodo_negado,nodoAdy);
 		arco= this.expresion.delArc(nodoAdy,nodo_negado);
@@ -207,5 +216,17 @@ public class Expresion {
 	return this.satisfacible;
     }
 
+
+    public String toString() {
+	String salida = "Grafo expresion: ";
+	salida += expresion.toString();
+	salida += "\n esUnitario:";
+	for (int i=0; i<esUnitario.length; i++) {
+	    salida += "\n "+esUnitario[i];
+	}
+	salida += "\n satisfacible: "+satisfacible;
+	salida += "\n satisfVarificada: "+satisfVerificada;
+	return salida;
+    }
 }
     
