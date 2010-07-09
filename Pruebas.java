@@ -12,10 +12,10 @@ public class Pruebas {
 	try {
 	    Expresion prueba = new Expresion(clausulas,8);
 
-	    System.out.println(prueba);
-	    prueba.simplificar();
-	    //System.out.println(prueba.determinarSatisf());
-	    System.out.println(prueba);
+	    //System.out.println(prueba);
+	    //prueba.simplificar();
+	    System.out.println(prueba.determinarSatisf());
+	    //System.out.println(prueba);
 	} catch (ExcepcionSimboloInvalido err) {
 	    System.out.println("wtf");
 	}

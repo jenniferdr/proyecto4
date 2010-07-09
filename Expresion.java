@@ -188,16 +188,12 @@ public class Expresion {
      * @return true si es satisfacible, false si no lo es.
      */
     public boolean determinarSatisf() {
+	this.simplificar();
+
 	if (this.satisfVerificada) {
 	    return this.satisfacible;
 	}
 	
-	//Si la expresión no estuviera simplificada
-	//Nuestro algoritmo fallaría
-	if (!this.simple) {
-	    this.simplificar();
-	}
-
         DiGraphList grafoImp = this.generarGrafoImplicacion();
 	List<List<Integer>> componentes = grafoImp.tarjan();
 	this.satisfacible = this.chequearComponentes(componentes);	
