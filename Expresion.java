@@ -74,13 +74,21 @@ public class Expresion {
 	}
 	
 	for(int i=0; i< this.unitarios.size(); i++){
-	    int nodo= (this.unitarios.get(i)).intValue();
+	    int nodo = (this.unitarios.get(i)).intValue();
+
+	    //Verificar si hay contradiccion
+	    if (this.esUnitario[negado(nodo)]) {
+		this.satisfacible = false;
+		this.satisfVerificada = true;
+		return;
+	    }
+
 	    List<Integer> adyacentes= this.expresion.getPredecesors(nodo);
 	    // Eliminar todos los arcos del nodo unitario
 	    for(int j=0; j< adyacentes.size() ;j++){
 		int nodoAdy = adyacentes.get(j).intValue();
-		Arc arco= this.expresion.delArc(nodo,nodoAdy);
-		arco= this.expresion.delArc(nodoAdy,nodo);
+		Arc arco = this.expresion.delArc(nodo,nodoAdy);
+		arco = this.expresion.delArc(nodoAdy,nodo);
             }
 
 	    // Tomar el negado del simbolo
@@ -88,32 +96,14 @@ public class Expresion {
 	    
 	    // Agregar adyacentes de nodo_negado a la lista de unitarios
 	    // y eliminar todos sus arcos.
-	    adyacentes= this.expresion.getPredecesors(nodo_negado);
+	    adyacentes = this.expresion.getPredecesors(nodo_negado);
 
             for(int j=0; j< adyacentes.size() ;j++){
 		int nodoAdy = adyacentes.get(j).intValue();
 		boolean ok= this.unitarios.add(nodoAdy);
 		this.esUnitario[nodoAdy]= true;
 
-		// Verificar si existe contradiccion
-		if(this.esPar(nodoAdy) && this.esUnitario[nodoAdy+1]){
-		    System.out.println("hola");
-		    this.satisfacible = false;
-		    this.satisfVerificada = true;
-		    return;	  
-		}
-		if(!(this.esPar(nodoAdy)) && this.esUnitario[nodoAdy-1]){
-		    System.out.println("hello");
-		    this.satisfacible = false;
-		    this.satisfVerificada = true;
-		    return;	
-		}
-		/*if (this.esUnitario[negado(nodoAdy)]) {
-		    this.satisfacible = false;
-		    this.satisfVerificada = true;
-		    }*/
-
-  		// Eliminar arcos
+		// Eliminar arcos
 		Arc arco= this.expresion.delArc(nodo_negado,nodoAdy);
 		arco= this.expresion.delArc(nodoAdy,nodo_negado);
 	    }
