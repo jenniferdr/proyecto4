@@ -16,7 +16,7 @@ public class Expresion {
      * y el número impar que le sigue es el negado de esa variable. Por ejemplo:
      * Si p = 2, entonces ¬p = 3 
      */
-    DiGraph expresion;
+    DiGraphList expresion;
     int numSimbolos; //Un simbolo p y ¬p cuentan como 2 símbolos distintos
     List<Integer> unitarios;
     boolean simple = true; //False si la expresión puede ser simplificada
@@ -125,7 +125,7 @@ public class Expresion {
     private DiGraphList generarGrafoImplicacion() {
 	
 	DiGraphList grafoImp = new DiGraphList(numSimbolos);
-	List<Arc> arcos = grafoImp.getAllArcs();
+	List<Arc> arcos = expresion.getAllArcs();
 	for (int i=0; i<arcos.size(); i++) {
 	    int simbolo1 = arcos.get(i).getSource();
 	    int simbolo2 = arcos.get(i).getDestination();
@@ -135,20 +135,21 @@ public class Expresion {
     }
 
 
-    public static void ordenar (Integer[] arreglo) {
+    public static void ordenar (Object[] arreglo) {
 	quicksort(arreglo, 0, arreglo.length);
     }
 
-    public static void quicksort (Integer[] arreglo, int ini, int fin) {
+    public static void quicksort (Object[] arreglo, int ini, int fin) {
 	if ( fin-ini <= 1 ) {
 	    return;
 	}
 	int limite = ini-1;
-	Integer pivote = arreglo[fin-1];
+	Integer pivote = (Integer) arreglo[fin-1];
         for (int j=ini; j<fin; j++) {
-	    if (arreglo[j].compareTo(pivote) <= 0) {
+	    Integer tmp = (Integer) arreglo[j];
+	    if (tmp.compareTo(pivote) <= 0) {
 		limite++;
-		Integer temp = arreglo[j];
+		Integer temp = tmp;
 		arreglo[j] = arreglo[limite];
 		arreglo[limite] = temp;
 	    }
@@ -169,14 +170,18 @@ public class Expresion {
 	}
 	for (int i=0; i< componentes.size() ; i++){
 	    //List<Integer> componente= componentes.get(i);
-	    Integer[] compConexa= (Integer[]) componentes.get(i).toArray();
+	    Object[] compConexa= componentes.get(i).toArray();
 	    ordenar(compConexa);
 	    for(int j=0; j< compConexa.length ; j++) {
-		int nodo = compConexa[j].intValue();
-		//Estamos seguros de que compConexa[j+1] existe porque su tamaño siempre es par
-		if (this.esPar(nodo) && (compConexa[j+1] == nodo+1) ) {
-		    return false;		
+		Integer temp = (Integer) compConexa[j]; 
+		int nodo = temp.intValue();
+		if (this.esPar(nodo) && j+1<compConexa.length) {
+		    Integer tmp = (Integer) compConexa[j+1];
+		    if (tmp.intValue() == nodo+1) {
+			return false;
+		    }
 		}
+		
 	    }
 	}
 	return true;

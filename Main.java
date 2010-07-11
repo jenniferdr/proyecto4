@@ -47,7 +47,7 @@ public static void main(String[] args){
 		    int x2= Integer.parseInt(coordenada[2])-1;
 		    int y2= Integer.parseInt(coordenada[3])-1;
 
-		    System.out.println("("+x1+","+y1+") ("+x2+","+y2+")");
+		    //System.out.println("("+x1+","+y1+") ("+x2+","+y2+")");
 
 		    //Asignar símbolos a avenidas
 		    if (avenidas[x1]==-1) {
@@ -138,6 +138,7 @@ public static void main(String[] args){
 		}
 		// Aqui termina la iteracion para los pares de puntos
 
+		//System.out.println(clausulas);
 		Expresion problema = new Expresion(clausulas, prox_simbol);
 		boolean satis = problema.determinarSatisf();
 
