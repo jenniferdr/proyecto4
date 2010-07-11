@@ -17,7 +17,7 @@ public class Expresion {
      * Si p = 2, entonces ¬p = 3 
      */
     DiGraphList expresion;
-    int numSimbolos; //Un simbolo p y ¬p cuentan como 2 símbolos distintos
+    int numSimbolos; //p y ¬p cuentan como 2 símbolos distintos
     List<Integer> unitarios;
     boolean simple = true; //False si la expresión puede ser simplificada
     boolean satisfVerificada = false; //True si se conoce la satisfacibilidad de la expresión
@@ -27,8 +27,8 @@ public class Expresion {
     /**
      * Crea una nueva expresión a partir de una lista de cláusulas.
      * @param clausulas Lista de cláusulas de la expresión
-     * @param numSimbolos Un número par no negativo que es igual a la cantidad de símbolos
-     *                    distintos entre todas las cláusulas multiplicado por 2.
+     * @param numSimbolos Un número par no negativo que es igual al símbolo con el número 
+     *                    mayor entre todas las cláusulas + 1
      */
     public Expresion (List<Clausula> clausulas, int numSimbolos) throws ExcepcionSimboloInvalido {
 	this.numSimbolos = numSimbolos;
@@ -41,17 +41,15 @@ public class Expresion {
 	    int variable1 = estaClausula.getSimbolo1();
 	    int variable2 = estaClausula.getSimbolo2();
 	    if( variable1 >= numSimbolos ) {
-	    	//continue;
 		throw new ExcepcionSimboloInvalido(variable1, estaClausula);
 	    } else if (variable2 >= numSimbolos ) {
-		throw new ExcepcionSimboloInvalido(variable1, estaClausula);
+		throw new ExcepcionSimboloInvalido(variable2, estaClausula);
 	    }
 	    
-	    //Utilizar el método esUnitaria de clausula lo hace más legible... - JoseA
 	    if (!estaClausula.esUnitaria()) {
 		// Relacionar las variables en el grafo
-		Arc arco= this.expresion.addArc(variable1, variable2);
-		arco= this.expresion.addArc(variable2, variable1);
+		Arc arco = this.expresion.addArc(variable1, variable2);
+		arco = this.expresion.addArc(variable2, variable1);
 	    } else {
 		//Agregar esta variable a lista de unitarias
 		boolean ok= this.unitarios.add(new Integer(variable1));
@@ -67,6 +65,7 @@ public class Expresion {
 
     /**
      * Simplifica la expresión eliminando todas las cláusulas unitarias existentes.
+     * Es decir, la convierte de <2CNF a 2CNF 
      */
     public void simplificar() {
 	if (this.simple) {
@@ -77,11 +76,19 @@ public class Expresion {
 	    int nodo = (this.unitarios.get(i)).intValue();
 
 	    //Verificar si hay contradiccion
+	    //Si el negado de este símbolo tambiéne s una cláusula unitaria
+	    //La expresión es automáticamente insatisfacible
 	    if (this.esUnitario[negado(nodo)]) {
 		this.satisfacible = false;
 		this.satisfVerificada = true;
 		return;
 	    }
+
+	    /* Para simplificar a cada cláusula unitaria p se le asigna True
+	       (lo cual es remover todos los arcos adyacentes a él en el grafo
+	       expresion) y a ¬p se le asigna False, lo cual es remover sus arcos
+	       y agregar los símbolos adyacentes a él como cláusulas unitarias
+	    */ 
 
 	    List<Integer> adyacentes= this.expresion.getPredecesors(nodo);
 	    // Eliminar todos los arcos del nodo unitario
@@ -122,6 +129,11 @@ public class Expresion {
 	}
     }
 
+    /*
+     * Este método devuelve un grafo de implicación basado en las cláusulas
+     * contenidas en el grafo expresion. Nótese que la expresion debe ser
+     * simplificada antes de llamar a este método
+     */
     private DiGraphList generarGrafoImplicacion() {
 	
 	DiGraphList grafoImp = new DiGraphList(numSimbolos);
@@ -135,10 +147,17 @@ public class Expresion {
     }
 
 
+    /*
+      Estos métodos son para ordenar un arreglo de Integer
+      pasado como un arreglo de Object. Esto se hace así
+      porque el método toArray de Lista devuelve un arreglo
+      de Object aunque la lista sea de Integer, y luego Java
+      no deja castear arreglos.
+     */
     public static void ordenar (Object[] arreglo) {
 	quicksort(arreglo, 0, arreglo.length);
     }
-
+    
     public static void quicksort (Object[] arreglo, int ini, int fin) {
 	if ( fin-ini <= 1 ) {
 	    return;
@@ -159,23 +178,33 @@ public class Expresion {
 	return;
     }
 
-
+    /*
+      Este método revisa las componentes f. conexas del grafo de implicación
+      y determina si la expresión es satisfacible o no.
+     */
     private boolean chequearComponentes(List<List<Integer>> componentes) {
-	
+	//Si el grafo es conexo, entonces todo símbolo y su negado
+	//están en la misma componente f. conexa y entonces no es satisfacible
+	//Si todo nodo es aislado, entonces ningún símbolo puede estar con su
+	//negado
 	if(componentes.size()==1){
 	    return false;
-	}
-	if(componentes.size()== this.numSimbolos){
+	} else if(componentes.size()== this.numSimbolos){
 	    return true;
 	}
+
+	//Se ordena cada componente f. conexa y para todo número par
+	//si el siguiente en el arreglo es su impar consecutivo (es decir
+	//su símbolo negado) es insatisfacible
 	for (int i=0; i< componentes.size() ; i++){
-	    //List<Integer> componente= componentes.get(i);
+
 	    Object[] compConexa= componentes.get(i).toArray();
 	    ordenar(compConexa);
-	    for(int j=0; j< compConexa.length ; j++) {
+
+	    for(int j=0; j< compConexa.length-1; j++) {
 		Integer temp = (Integer) compConexa[j]; 
 		int nodo = temp.intValue();
-		if (this.esPar(nodo) && j+1<compConexa.length) {
+		if (this.esPar(nodo)) {
 		    Integer tmp = (Integer) compConexa[j+1];
 		    if (tmp.intValue() == nodo+1) {
 			return false;
@@ -205,19 +234,6 @@ public class Expresion {
 	this.satisfVerificada = true;
 
 	return this.satisfacible;
-    }
-
-
-    public String toString() {
-	String salida = "Grafo expresion: ";
-	salida += expresion.toString();
-	salida += "\n esUnitario:";
-	for (int i=0; i<esUnitario.length; i++) {
-	    salida += "\n "+esUnitario[i];
-	}
-	salida += "\n satisfacible: "+satisfacible;
-	salida += "\n satisfVarificada: "+satisfVerificada;
-	return salida;
     }
 }
     

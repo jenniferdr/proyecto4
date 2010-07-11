@@ -255,4 +255,9 @@ public abstract class DiGraph {
      */
     public abstract void write(String fileName) throws IOException;
 
+    public List<List<Integer>> tarjan() {
+	Tarjan objTarjan = new Tarjan(this);
+	return objTarjan.obtComponentes();
+    }
+
 }

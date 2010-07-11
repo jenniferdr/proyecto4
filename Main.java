@@ -49,7 +49,7 @@ public static void main(String[] args){
 
 		    //System.out.println("("+x1+","+y1+") ("+x2+","+y2+")");
 
-		    //Asignar sÌmbolos a avenidas
+		    //Asignar s√≠mbolos a avenidas
 		    if (avenidas[x1]==-1) {
 			avenidas[x1] = prox_simbol;
 			prox_simbol+=2;
@@ -75,15 +75,15 @@ public static void main(String[] args){
 		     */
 		  
 		    //Ver orientacion de las calles y avenidas
-		    //y generar cl·usulas
+		    //y generar cl√°usulas
 
-		    //Si el punto de origen est· m·s a la izquierda que el destino
+		    //Si el punto de origen est√° m√°s a la izquierda que el destino
 		    if (x1 < x2) {
 	
 			int a = calles[y1];
 
 			//Si las calles son distintas, hay dos orientaciones posibles
-			//y se generar·n 4 cl·usulas
+			//y se generar√°n 4 cl√°usulas
 			if (y1 != y2) {
 			    int b = calles[y2];
 			    int c = avenidas[x1];
@@ -91,7 +91,7 @@ public static void main(String[] args){
 
 	    		    if(y1 > y2){
 				// Invertir la direccion de las avenidas
-				// Si la calle 'origen' est· m·s al sur que el destino
+				// Si la calle 'origen' est√° m√°s al sur que el destino
 				c++; 
 				d++;
 			    }
