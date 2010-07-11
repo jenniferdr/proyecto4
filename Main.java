@@ -14,9 +14,10 @@ public static void main(String[] args){
 	    System.err.println("Sintaxis: java Main <fileName_entrada> <fileName_salida>");
 	    return;
 	}
-
+	
 	try {
 	    BufferedReader in = new BufferedReader(new FileReader(args[0]));
+	    PrintStream out = new PrintStream(args[1]);
 	    int instancias = Integer.parseInt(in.readLine());
 	    for(int i=0; i< instancias ; i++){
 		String[] items= in.readLine().split(" ");
@@ -48,28 +49,6 @@ public static void main(String[] args){
 
 		    System.out.println("("+x1+","+y1+") ("+x2+","+y2+")");
 
-		    //Los -1 es porque por lo visto las calles/avenidas se empiezan a numerar por el 1
-
-		    // Asignar simbolos
-		    /*for(int z=0; z<4; z++){
-		    	if(avenidas[Integer.parseInt(coordenada[z])]==-1){
-			    avenidas[Integer.parseInt(coordenada[z])]= prox_simbol;
-			    prox_simbol= prox_simbol+2;
-		    	}
-			z++;
-		    }
-		    
-		    for(int z=1; z<4; z++){
-		    	if(calles[Integer.parseInt(coordenada[z])]==-1){
-			    calles[Integer.parseInt(coordenada[z])]= prox_simbol;
-			    prox_simbol= prox_simbol+2;
-		    	}
-			z++;
-			}*/
-		    //Esto ^ no lo logra mucho...
-		    //En el 1º bloque estas asignando símbolos como si las 4 coordenadas fueran de avenidas, lo cual
-		    //no necesariamente tiene sentido y podría hasta dar en ciertos casos fuera de arreglo
-
 		    //Asignar símbolos a avenidas
 		    if (avenidas[x1]==-1) {
 			avenidas[x1] = prox_simbol;
@@ -90,8 +69,8 @@ public static void main(String[] args){
 		    }
 		    
 		    
-		    /* Temp:
-		       Calle Oeste-Este -> simbolo no negado
+		    /* Convencion:
+		       Calle Oeste-Este -> Simbolo no negado
 		       Avenida Norte-Sur -> Simbolo no negado		       
 		     */
 		  
@@ -162,13 +141,12 @@ public static void main(String[] args){
 		Expresion problema = new Expresion(clausulas, prox_simbol);
 		boolean satis = problema.determinarSatisf();
 
-		PrintStream out = new PrintStream(args[1]);
+		
 		if(satis){
 		    out.println("Si.");
 		}else{
 		    out.println("No.");
 		}
-		System.out.println(satis);
 	    }
 	} catch(NumberFormatException e) {
 	    System.err.println("Error de formato en el archivo especificado");
